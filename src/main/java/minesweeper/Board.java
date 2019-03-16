@@ -55,7 +55,7 @@ public class Board {
             this.grids.put(gridNumber,"\u2691 ");
             return true;
         }
-        this.grids.put(gridNumber, neighbouringMinesCount.toString());
+        this.grids.put(gridNumber, neighbouringMinesCount.toString()+" ");
         return true;
     }
 
