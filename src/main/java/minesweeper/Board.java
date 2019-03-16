@@ -43,6 +43,8 @@ public class Board {
 
     public boolean revealGrid(Integer gridNumber) {
         if (this.mines.contains(gridNumber)) {
+            this.mines.forEach(mineGrid->this.grids.put(mineGrid,"\u2620 "));
+            printBoard();
             System.out.println("GAME OVER ...you landed on a mine");
             return false;
         }
@@ -60,8 +62,7 @@ public class Board {
     public boolean hasWon() {
         Set<Integer> toBeCheckedGrids = new HashSet<>(this.revealedGrids);
         toBeCheckedGrids.addAll(mines);
-        if (toBeCheckedGrids.size() == this.side * this.side) return true;
-        return false;
+        return toBeCheckedGrids.size() == this.side * this.side;
     }
 
     private Integer getNeighbouringMinesCount(Integer gridNumber) {

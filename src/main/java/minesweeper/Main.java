@@ -7,6 +7,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         Board board = new Board(10);
         board.printBoard();
+        System.out.println("Grids are numbered 1 to 100 starting from bottom right corner");
         System.out.println("Enter grid number to reveal");
         while (scanner.hasNextInt()){
             Integer chosenGridNumber = scanner.nextInt();
