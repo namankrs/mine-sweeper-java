@@ -69,17 +69,29 @@ public class Board {
         Set<Integer> neighbours = new HashSet<>(Arrays.asList(gridNumber + side,
                 gridNumber - side));
         if (gridNumber % this.side == 0) {
-            neighbours.addAll(Arrays.asList(gridNumber - 1, gridNumber + side - 1, gridNumber - side - 1));
-            neighbours.retainAll(this.mines);
-            return neighbours.size();
+            return getLeftNeighboursCount(gridNumber, neighbours);
         }
         if (gridNumber % side == 1) {
-            neighbours.addAll(Arrays.asList(gridNumber + 1, gridNumber - side + 1, gridNumber + side + 1));
-            neighbours.retainAll(this.mines);
-            return neighbours.size();
+            return getRightNeighboursCount(gridNumber, neighbours);
         }
+        return getAllNeighboursCount(gridNumber, neighbours);
+    }
+
+    private Integer getAllNeighboursCount(Integer gridNumber, Set<Integer> neighbours) {
         neighbours.addAll(Arrays.asList(gridNumber - 1, gridNumber + side - 1, gridNumber - side - 1,
                 gridNumber + 1, gridNumber - side + 1, gridNumber + side + 1));
+        neighbours.retainAll(this.mines);
+        return neighbours.size();
+    }
+
+    private Integer getRightNeighboursCount(Integer gridNumber, Set<Integer> neighbours) {
+        neighbours.addAll(Arrays.asList(gridNumber + 1, gridNumber - side + 1, gridNumber + side + 1));
+        neighbours.retainAll(this.mines);
+        return neighbours.size();
+    }
+
+    private Integer getLeftNeighboursCount(Integer gridNumber, Set<Integer> neighbours) {
+        neighbours.addAll(Arrays.asList(gridNumber - 1, gridNumber + side - 1, gridNumber - side - 1));
         neighbours.retainAll(this.mines);
         return neighbours.size();
     }
