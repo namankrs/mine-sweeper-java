@@ -18,7 +18,11 @@ public class Board {
     }
 
     private void initialiseMines() {
-        this.mines = new HashSet<>(Arrays.asList(2,11,22,33,44,55,66,77,88,99));
+        this.mines = new HashSet<>();
+        for (int mineCount = 0; mineCount < 20; mineCount++) {
+            Integer mineIndex = (int) (Math.random() * side * side);
+            this.mines.add(mineIndex);
+        }
     }
 
 
@@ -43,7 +47,7 @@ public class Board {
 
     public boolean revealGrid(Integer gridNumber) {
         if (this.mines.contains(gridNumber)) {
-            this.mines.forEach(mineGrid->this.grids.put(mineGrid,"\u2620 "));
+            this.mines.forEach(mineGrid -> this.grids.put(mineGrid, "\u2620 "));
             printBoard();
             System.out.println("GAME OVER ...you landed on a mine");
             return false;
@@ -52,10 +56,10 @@ public class Board {
 
         Integer neighbouringMinesCount = this.getNeighbouringMinesCount(gridNumber);
         if (neighbouringMinesCount == 0) {
-            this.grids.put(gridNumber,"\u2691 ");
+            this.grids.put(gridNumber, "\u2691 ");
             return true;
         }
-        this.grids.put(gridNumber, neighbouringMinesCount.toString()+" ");
+        this.grids.put(gridNumber, neighbouringMinesCount.toString() + " ");
         return true;
     }
 
