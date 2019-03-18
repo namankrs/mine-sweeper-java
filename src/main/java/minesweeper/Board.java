@@ -6,7 +6,7 @@ class Board {
 
     private static final String MINE = "\u2620 ";
     private static final String FLAG = "\u2691 ";
-    private static final int MINES_COUNT = 20;
+    private static final int MINES_COUNT = 10;
     private Integer side;
     private Map<Integer, String> grids;
     private Set<Integer> mines;
@@ -55,6 +55,8 @@ class Board {
 
 
         if (neighbouringMinesCount == 0) {
+            handleRecursiveMines(neighbours);
+            revealFlaggedNeighbours(neighbours);
             this.grids.put(gridNumber, FLAG);
             return true;
         }
@@ -62,9 +64,45 @@ class Board {
         return true;
     }
 
+
+    private void revealFlaggedNeighbours(Set<Integer> neighbours) {
+        if(!Collections.disjoint(neighbours,this.mines)) return;
+        neighbours.removeAll(revealedGrids);
+        for (Integer neighbour : neighbours) {
+            Set<Integer> recursiveNeighbours = this.getNeighbours(neighbour);
+            Set<Integer> neighbouringMines = new HashSet<>(recursiveNeighbours);
+            neighbouringMines.retainAll(this.mines);
+            Integer neighbouringMinesCount = neighbouringMines.size();
+
+            if (neighbouringMinesCount != 0) return;
+
+            this.grids.put(neighbour, FLAG);
+            revealedGrids.add(neighbour);
+            handleRecursiveMines(recursiveNeighbours);
+        }
+    }
+
+
+    private void handleRecursiveMines(Set<Integer> neighbours) {
+        if(!Collections.disjoint(neighbours,this.mines)) return;
+        neighbours.removeAll(revealedGrids);
+        for (Integer neighbour : neighbours) {
+            Set<Integer> recursiveNeighbours = this.getNeighbours(neighbour);
+            Set<Integer> neighbouringMines = new HashSet<>(recursiveNeighbours);
+            neighbouringMines.retainAll(this.mines);
+            Integer neighbouringMinesCount = neighbouringMines.size();
+
+            if (neighbouringMinesCount != 0) return;
+
+            this.grids.put(neighbour, FLAG);
+            revealedGrids.add(neighbour);
+        }
+
+    }
+
     boolean hasWon() {
         Set<Integer> toBeCheckedGrids = new HashSet<>(this.revealedGrids);
-        toBeCheckedGrids.addAll(mines);
+        toBeCheckedGrids.addAll(this.mines);
         return toBeCheckedGrids.size() == this.side * this.side;
     }
 
