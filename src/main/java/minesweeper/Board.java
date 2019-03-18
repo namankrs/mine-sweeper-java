@@ -2,18 +2,18 @@ package minesweeper;
 
 import java.util.*;
 
-public class Board {
+class Board {
 
-    public static final String MINE = "\u2620 ";
-    public static final String FLAG = "\u2691 ";
-    public static final int MINES_COUNT = 20;
+    private static final String MINE = "\u2620 ";
+    private static final String FLAG = "\u2691 ";
+    private static final int MINES_COUNT = 20;
     private Integer side;
     private Map<Integer, String> grids;
     private Set<Integer> mines;
     private Set<Integer> revealedGrids;
 
 
-    public Board(Integer side) {
+    Board(Integer side) {
         this.side = side;
         initialiseBoard();
         this.mines = new Mines(MINES_COUNT).generateRandomMines(side);
@@ -28,7 +28,7 @@ public class Board {
     }
 
 
-    public void printBoard() {
+    void printBoard() {
         System.out.println();
         for (int grid = side * side; grid > 0; grid--) {
             System.out.print(this.grids.get(grid));
@@ -39,7 +39,7 @@ public class Board {
         System.out.println();
     }
 
-    public boolean revealGrid(Integer gridNumber) {
+    boolean revealGrid(Integer gridNumber) {
         if (this.mines.contains(gridNumber)) {
             this.mines.forEach(mineGrid -> this.grids.put(mineGrid, MINE));
             printBoard();
@@ -48,7 +48,12 @@ public class Board {
         }
         revealedGrids.add(gridNumber);
 
-        Integer neighbouringMinesCount = this.getNeighbouringMinesCount(gridNumber);
+        Set<Integer> neighbours = this.getNeighbours(gridNumber);
+        Set<Integer> neighbouringMines = new HashSet<>(neighbours);
+        neighbouringMines.retainAll(this.mines);
+        Integer neighbouringMinesCount = neighbouringMines.size();
+
+
         if (neighbouringMinesCount == 0) {
             this.grids.put(gridNumber, FLAG);
             return true;
@@ -57,40 +62,37 @@ public class Board {
         return true;
     }
 
-    public boolean hasWon() {
+    boolean hasWon() {
         Set<Integer> toBeCheckedGrids = new HashSet<>(this.revealedGrids);
         toBeCheckedGrids.addAll(mines);
         return toBeCheckedGrids.size() == this.side * this.side;
     }
 
-    private Integer getNeighbouringMinesCount(Integer gridNumber) {
+    private Set<Integer> getNeighbours(Integer gridNumber) {
         Set<Integer> neighbours = new HashSet<>(Arrays.asList(gridNumber + side,
                 gridNumber - side));
         if (gridNumber % this.side == 0) {
-            return getLeftNeighboursCount(gridNumber, neighbours);
+            return getLeftNeighbours(gridNumber, neighbours);
         }
         if (gridNumber % side == 1) {
-            return getRightNeighboursCount(gridNumber, neighbours);
+            return getRightNeighbours(gridNumber, neighbours);
         }
-        return getAllNeighboursCount(gridNumber, neighbours);
+        return getAllNeighbours(gridNumber, neighbours);
     }
 
-    private Integer getAllNeighboursCount(Integer gridNumber, Set<Integer> neighbours) {
+    private Set<Integer> getAllNeighbours(Integer gridNumber, Set<Integer> neighbours) {
         neighbours.addAll(Arrays.asList(gridNumber - 1, gridNumber + side - 1, gridNumber - side - 1,
                 gridNumber + 1, gridNumber - side + 1, gridNumber + side + 1));
-        neighbours.retainAll(this.mines);
-        return neighbours.size();
+        return neighbours;
     }
 
-    private Integer getRightNeighboursCount(Integer gridNumber, Set<Integer> neighbours) {
+    private Set<Integer> getRightNeighbours(Integer gridNumber, Set<Integer> neighbours) {
         neighbours.addAll(Arrays.asList(gridNumber + 1, gridNumber - side + 1, gridNumber + side + 1));
-        neighbours.retainAll(this.mines);
-        return neighbours.size();
+        return neighbours;
     }
 
-    private Integer getLeftNeighboursCount(Integer gridNumber, Set<Integer> neighbours) {
+    private Set<Integer> getLeftNeighbours(Integer gridNumber, Set<Integer> neighbours) {
         neighbours.addAll(Arrays.asList(gridNumber - 1, gridNumber + side - 1, gridNumber - side - 1));
-        neighbours.retainAll(this.mines);
-        return neighbours.size();
+        return neighbours;
     }
 }
