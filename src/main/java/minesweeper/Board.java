@@ -4,6 +4,9 @@ import java.util.*;
 
 public class Board {
 
+    public static final String MINE = "\u2620 ";
+    public static final String FLAG = "\u2691 ";
+    public static final int MINES_COUNT = 20;
     private Integer side;
     private Map<Integer, String> grids;
     private Set<Integer> mines;
@@ -13,18 +16,9 @@ public class Board {
     public Board(Integer side) {
         this.side = side;
         initialiseBoard();
-        initialiseMines();
+        this.mines = new Mines(MINES_COUNT).generateRandomMines(side);
         this.revealedGrids = new HashSet<>();
     }
-
-    private void initialiseMines() {
-        this.mines = new HashSet<>();
-        for (int mineCount = 0; mineCount < 20; mineCount++) {
-            Integer mineIndex = (int) (Math.random() * side * side);
-            this.mines.add(mineIndex);
-        }
-    }
-
 
     private void initialiseBoard() {
         this.grids = new HashMap<>(this.side * this.side);
@@ -47,7 +41,7 @@ public class Board {
 
     public boolean revealGrid(Integer gridNumber) {
         if (this.mines.contains(gridNumber)) {
-            this.mines.forEach(mineGrid -> this.grids.put(mineGrid, "\u2620 "));
+            this.mines.forEach(mineGrid -> this.grids.put(mineGrid, MINE));
             printBoard();
             System.out.println("GAME OVER ...you landed on a mine");
             return false;
@@ -56,7 +50,7 @@ public class Board {
 
         Integer neighbouringMinesCount = this.getNeighbouringMinesCount(gridNumber);
         if (neighbouringMinesCount == 0) {
-            this.grids.put(gridNumber, "\u2691 ");
+            this.grids.put(gridNumber, FLAG);
             return true;
         }
         this.grids.put(gridNumber, neighbouringMinesCount.toString() + " ");
